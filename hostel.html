@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .sidebar {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: var(--dark-color);
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover, .sidebar ul li a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-content {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.blue {
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .stat-card.green {
+            border-top: 5px solid var(--success-color);
+        }
+
+        .stat-card.red {
+            border-top: 5px solid var(--danger-color);
+        }
+
+        .stat-card.purple {
+            border-top: 5px solid #9b59b6;
+        }
+
+        .stat-card h3 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 60%;
+            box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2);
+            animation: modalopen 0.5s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0}
+            to {opacity: 1}
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        #search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hostel Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="#" id="homeLink">Home</a></li>
+                <li><a href="#" id="aboutLink">About</a></li>
+                <li><a href="#" id="contactLink">Contact</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="#" class="active" id="dashboardLink">Dashboard</a></li>
+                    <li><a href="#" id="roomsLink">Rooms</a></li>
+                    <li><a href="#" id="residentsLink">Residents</a></li>
+                    <li><a href="#" id="staffLink">Staff</a></li>
+                    <li><a href="#" id="paymentsLink">Payments</a></li>
+                    <li><a href="#" id="complaintsLink">Complaints</a></li>
+                    <li><a href="#" id="settingsLink">Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <h2>Dashboard</h2>
+                    <div class="stats">
+                        <div class="stat-card blue">
+                            <h3>Total Rooms</h3>
+                            <p>100</p>
+                            <small>5 Available</small>
+                        </div>
+                        <div class="stat-card green">
+                            <h3>Total Residents</h3>
+                            <p>95</p>
+                            <small>10 New this month</small>
+                        </div>
+                        <div class="stat-card red">
+                            <h3>Pending Payments</h3>
+                            <p>15</p>
+                            <small>$5,250 Total</small>
+                        </div>
+                        <div class="stat-card purple">
+                            <h3>Complaints</h3>
+                            <p>7</p>
+                            <small>3 Resolved</small>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Recent Activities</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>User</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activitiesList">
+                                <!-- Activities data will be added here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rooms Section -->
+                <div id="roomsSection" class="hide">
+                    <h2>Room Management</h2>
+                    <button class="btn btn-primary" id="addRoomBtn">Add New Room</button>
+                    <input type="text" id="search" placeholder="Search rooms...">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Room No</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomsList">
+                            <!-- Room data will be added here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Residents Section -->
+                <div id="residentsSection" class="hide">
+                    <h2>Resident Management</h2>
+                    <button class="btn btn-primary" id="addResidentBtn">Add New Resident</button>
+                    <input type="text" id="search" placeholder="Search residents...">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Room No</th>
+                                <th>Join Date</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="residentsList">
+                            <!-- Resident data will be added here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Other sections (staff, payments, complaints, settings) follow similar pattern -->
+                <div id="staffSection" class="hide">
+                    <h2>Staff Management</h2>
+                    <p>Staff management features will be implemented here.</p>
+                </div>
+
+                <div id="paymentsSection" class="hide">
+                    <h2>Payment Management</h2>
+                    <p>Payment tracking and management features will be implemented here.</p>
+                </div>
+
+                <div id="complaintsSection" class="hide">
+                    <h2>Complaints Management</h2>
+                    <p>Complaint tracking and resolution features will be implemented here.</p>
+                </div>
+
+                <div id="settingsSection" class="hide">
+                    <h2>System Settings</h2>
+                    <p>Configuration and settings features will be implemented here.</p>
+                </div>
+
+                <div id="aboutSection" class="hide">
+                    <h2>About</h2>
+                    <p>Hostel Management System is a comprehensive solution for managing hostel operations efficiently.</p>
+                </div>
+
+                <div id="contactSection" class="hide">
+                    <h2>Contact</h2>
+                    <p>For support, please contact: support@hostelmanagementsystem.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Room Modal -->
+    <div id="addRoomModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Add New Room</h2>
+            <form id="addRoomForm">
+                <div class="form-group">
+                    <label for="roomNumber">Room Number</label>
+                    <input type="text" id="roomNumber" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="roomType">Room Type</label>
+                    <select id="roomType" class="form-control" required>
+                        <option value="">Select Type</option>
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Triple">Triple</option>
+                        <option value="Quad">Quad</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="capacity">Capacity</label>
+                    <input type="number" id="capacity" class="form-control" min="1" max="4" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price (per month)</label>
+                    <input type="number" id="price" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Room</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Resident Modal -->
+    <div id="addResidentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Add New Resident</h2>
+            <form id="addResidentForm">
+                <div class="form-group">
+                    <label for="residentName">Full Name</label>
+                    <input type="text" id="residentName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="residentRoom">Room Number</label>
+                    <select id="residentRoom" class="form-control" required>
+                        <option value="">Select Room</option>
+                        <!-- Room options will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="joinDate">Join Date</label>
+                    <input type="date" id="joinDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact">Contact Number</label>
+                    <input type="tel" id="contact" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="emergencyContact">Emergency Contact</label>
+                    <input type="tel" id="emergencyContact" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Resident</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        const activities = [
+            { date: '2025-04-07', activity: 'New Resident', user: 'Admin', details: 'John Doe assigned to Room 101' },
+            { date: '2025-04-07', activity: 'Payment Received', user: 'System', details: '$350 from Mary Smith' },
+            { date: '2025-04-06', activity: 'Complaint Filed', user: 'Alex Wong', details: 'Water heater not working in Room 205' },
+            { date: '2025-04-06', activity: 'Room Maintenance', user: 'Staff', details: 'Room 304 plumbing fixed' },
+            { date: '2025-04-05', activity: 'Checkout', user: 'Admin', details: 'Sarah Johnson left Room 112' }
+        ];
+
+        const rooms = [
+            { id: 1, roomNumber: '101', type: 'Single', capacity: 1, status: 'Occupied', price: 350 },
+            { id: 2, roomNumber: '102', type: 'Single', capacity: 1, status: 'Available', price: 350 },
+            { id: 3, roomNumber: '201', type: 'Double', capacity: 2, status: 'Occupied', price: 275 },
+            { id: 4, roomNumber: '202', type: 'Double', capacity: 2, status: 'Occupied', price: 275 },
+            { id: 5, roomNumber: '301', type: 'Triple', capacity: 3, status: 'Available', price: 225 },
+            { id: 6, roomNumber: '302', type: 'Quad', capacity: 4, status: 'Occupied', price: 200 }
+        ];
+
+        const residents = [
+            { id: 1, name: 'John Doe', roomNo: '101', joinDate: '2024-09-01', contact: '555-1234', status: 'Active' },
+            { id: 2, name: 'Mary Smith', roomNo: '201', joinDate: '2024-10-15', contact: '555-5678', status: 'Active' },
+            { id: 3, name: 'Alex Wong', roomNo: '202', joinDate: '2025-01-05', contact: '555-9012', status: 'Active' },
+            { id: 4, name: 'Lisa Chen', roomNo: '202', joinDate: '2025-01-10', contact: '555-3456', status: 'Active' },
+            { id: 5, name: 'James Wilson', roomNo: '302', joinDate: '2025-02-20', contact: '555-7890', status: 'Active' }
+        ];
+
+        // DOM Elements
+        const dashboardLink = document.getElementById('dashboardLink');
+        const roomsLink = document.getElementById('roomsLink');
+        const residentsLink = document.getElementById('residentsLink');
+        const staffLink = document.getElementById('staffLink');
+        const paymentsLink = document.getElementById('paymentsLink');
+        const complaintsLink = document.getElementById('complaintsLink');
+        const settingsLink = document.getElementById('settingsLink');
+        const homeLink = document.getElementById('homeLink');
+        const aboutLink = document.getElementById('aboutLink');
+        const contactLink = document.getElementById('contactLink');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const dashboardSection = document.getElementById('dashboardSection');
+        const roomsSection = document.getElementById('roomsSection');
+        const residentsSection = document.getElementById('residentsSection');
+        const staffSection = document.getElementById('staffSection');
+        const paymentsSection = document.getElementById('paymentsSection');
+        const complaintsSection = document.getElementById('complaintsSection');
+        const settingsSection = document.getElementById('settingsSection');
+        const aboutSection = document.getElementById('aboutSection');
+        const contactSection = document.getElementById('contactSection');
+
+        const addRoomBtn = document.getElementById('addRoomBtn');
+        const addRoomModal = document.getElementById('addRoomModal');
+        const addResidentBtn = document.getElementById('addResidentBtn');
+        const addResidentModal = document.getElementById('addResidentModal');
+        const closeBtns = document.querySelectorAll('.close-btn');
+
+        const addRoomForm = document.getElementById('addRoomForm');
+        const addResidentForm = document.getElementById('addResidentForm');
+
+        const activitiesList = document.getElementById('activitiesList');
+        const roomsList = document.getElementById('roomsList');
+        const residentsList = document.getElementById('residentsList');
+        const residentRoom = document.getElementById('residentRoom');
+
+        // Functions to show/hide sections
+        function hideAllSections() {
+            const sections = document.querySelectorAll('.main-content > div');
+            sections.forEach(section => {
+                section.classList.add('hide');
+            });
+
+            const navLinks = document.querySelectorAll('.sidebar ul li a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+        }
+
+        function showSection(section, link) {
+            hideAllSections();
+            section.classList.remove('hide');
+            if (link) {
+                link.classList.add('active');
+            }
+        }
+
+        // Event Listeners
+        dashboardLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(dashboardSection, dashboardLink);
+        });
+
+        roomsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(roomsSection, roomsLink);
+            displayRooms();
+        });
+
+        residentsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(residentsSection, residentsLink);
+            displayResidents();
+        });
+
+        staffLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(staffSection, staffLink);
+        });
+
+        paymentsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(paymentsSection, paymentsLink);
+        });
+
+        complaintsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(complaintsSection, complaintsLink);
+        });
+
+        settingsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(settingsSection, settingsLink);
+        });
+
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(dashboardSection, dashboardLink);
+        });
+
+        aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(aboutSection);
+        });
+
+        contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(contactSection);
+        });
+
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Logout functionality would be implemented here.');
+        });
+
+        // Modal functionality
+        addRoomBtn.addEventListener('click', () => {
+            addRoomModal.style.display = 'block';
+        });
+
+        addResidentBtn.addEventListener('click', () => {
+            populateRoomDropdown();
+            addResidentModal.style.display = 'block';
+        });
+
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                addRoomModal.style.display = 'none';
+                addResidentModal.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === addRoomModal) {
+                addRoomModal.style.display = 'none';
+            }
+            if (e.target === addResidentModal) {
+                addResidentModal.style.display = 'none';
+            }
+        });
+
+        // Form submissions
+        addRoomForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const roomNumber = document.getElementById('roomNumber').value;
+            const roomType = document.getElementById('roomType').value;
+            const capacity = document.getElementById('capacity').value;
+            const price = document.getElementById('price').value;
+
+            const newRoom = {
+                id: rooms.length + 1,
+                roomNumber,
+                type: roomType,
+                capacity: parseInt(capacity),
+                status: 'Available',
+                price: parseInt(price)
+            };
+
+            rooms.push(newRoom);
+            displayRooms();
+            addRoomModal.style.display = 'none';
+            addRoomForm.reset();
+            alert('Room added successfully!');
+        });
+
+        addResidentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('residentName').value;
+            const roomNo = document.getElementById('residentRoom').value;
+            const joinDate = document.getElementById('joinDate').value;
+            const contact = document.getElementById('contact').value;
+
+            const newResident = {
+                id: residents.length + 1,
+                name,
+                roomNo,
+                joinDate,
+                contact,
+                status: 'Active'
+            };
+
+            residents.push(newResident);
+            
+            // Update room status
+            const room = rooms.find(r => r.roomNumber === roomNo);
+            if (room) {
+                room.status = 'Occupied';
+            }
+
+            displayResidents();
+            addResidentModal.style.display = 'none';
+            addResidentForm.reset();
+            alert('Resident added successfully!');
+        });
+
+        // Display functions
+        function displayActivities() {
+            activitiesList.innerHTML = '';
+            activities.forEach(activity => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${activity.date}</td>
+                    <td>${activity.activity}</td>
+                    <td>${activity.user}</td>
+                    <td>${activity.details}</td>
+                `;
+                activitiesList.appendChild(row);
+            });
+        }
+
+        function displayRooms() {
+            roomsList.innerHTML = '';
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${room.roomNumber}</td>
+                    <td>${room.type}</td>
+                    <td>${room.capacity}</td>
+                    <td>${room.status}</td>
+                    <td>$${room.price}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editRoom(${room.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteRoom(${room.id})">Delete</button>
+                    </td>
+                `;
+                roomsList.appendChild(row);
+            });
+        }
+
+        function displayResidents() {
+            residentsList.innerHTML = '';
+            residents.forEach(resident => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${resident.id}</td>
+                    <td>${resident.name}</td>
+                    <td>${resident.roomNo}</td>
+                    <td>${resident.joinDate}</td>
+                    <td>${resident.contact}</td>
+                    <td>${resident.status}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editResident(${resident.id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteResident(${resident.id})">Delete</button>
+                    </td>
+                `;
+                residentsList.appendChild(row);
+            });
+        }
+
+        function populateRoomDropdown() {
+            residentRoom.innerHTML = '<option value="">Select Room</option>';
+            const availableRooms = rooms.filter(room => room.status === 'Available');
+            availableRooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.roomNumber;
+                option.textContent = `${room.roomNumber} (${room.type})`;
+                residentRoom.appendChild(option);
+            });
+        }
+
+        // CRUD operations
+        window.editRoom = function(id) {
+            alert(`Edit room with ID: ${id}`);
+            // Implementation would go here
+        };
+
+        window.deleteRoom = function(id) {
+            if (confirm('Are you sure you want to delete this room?')) {
+                const index = rooms.findIndex(room => room.id === id);
+                if (index !== -1) {
+                    rooms.splice(index, 1);
+                    displayRooms();
+                    alert('Room deleted successfully!');
+                }
+            }
+        };
+
+        window.editResident = function(id) {
+            alert(`Edit resident with ID: ${id}`);
+            // Implementation would go here
+        };
+
+        window.deleteResident = function(id) {
+            if (confirm('Are you sure you want to check out this resident?')) {
+                const index = residents.findIndex(resident => resident.id === id);
+                if (index !== -1) {
+                    const roomNo = residents[index].roomNo;
+                    residents.splice(index, 1);
+                    
+                    // Update room status
+                    const room = rooms.find(r => r.roomNumber === roomNo);
+                    if (room) {
+                        const hasOtherResidents = residents.some(r => r.roomNo === roomNo);
+                        if (!hasOtherResidents) {
+                            room.status = 'Available';
+                        }
+                    }
+                    
+                    displayResidents();
+                    alert('Resident checked out successfully!');
+                }
+            }
+        };
+
+        // Initialize the page
+        function init() {
+            displayActivities();
+            // Start on dashboard
+            showSection(dashboardSection, dashboardLink);
+        }
+
+        // Run initialization
+        init();
+    </script>
+</body>
+</html>
